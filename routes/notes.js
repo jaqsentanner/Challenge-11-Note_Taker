@@ -1,49 +1,28 @@
-const router = require('express').Router();
+const notes = require('express').Router();
+const uuid = require('./helpers/uuid');
 const fs = require('fs');
-const uuid = require('./helpers/uuid')
 
-
-router.get('/notes', (req,res) => {
-
-    const file = './db/db.json'
-
-    fs.readFile(file, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-        } else {
-            const parsedData = JSON.parse(data);
-            res.json(parsedData)
-        }
-    });
-
-});
-
-
-router.post('/notes', (req,res) => {
-    const { title, text } = req.body;
-
-    const newNote = {
-        title,
-        text,
-        id: uuid(),
-    };
-
-    const file = './db/db.json'
-
-    const writeToFile = (destination, content) =>
-    fs.writeFile(destination, JSON.stringify(content, null, 4), (err) => 
-    err ? console.error(err) : console.info(`/nData written to ${destination}`));
-
-    fs.readFile(file, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-        } else {
-            const parsedData = JSON.parse(data);
-            parsedData.push(newNote);
-            writeToFile(file, parsedData);
-            res.json(parsedData)
-        }
+notes.get('/', (req, res) => {
+    fs.readFile('./db/db.json', { encoding: 'utf8' }, (err, db) => {
+        res.json(JSON.parse(db));
     });
 });
 
-module.exports = router;
+notes.post('/', (req,res) => {
+    fs.readFile('./db/db.json', { encoding: 'utf8' }, (err, db) => {
+        const db_json = JSON.parse(db);
+        const { title, text } = req.body;
+        const newNote = {
+            id: uuid(),
+            title: title,
+            text: text
+        }
+        db_json.push(newNote);
+        fs.writeFile('./db/db.json', JSON.stringify(db_json), (err) => {
+            res.send(err ? err : 'note saved successfully');
+        });
+    });
+});
+
+module.exports = notes;
+

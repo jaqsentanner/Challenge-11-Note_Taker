@@ -1,6 +1,1 @@
-[
-    {
-        "title":"Test Title",
-        "text":"Test text"
-    }
-]
+[{"title":"Test Title","text":"Test text"},{"id":"e1a0","title":"Meyer - Test1 to db.json","text":"Testing first note to see if it enters into the db.json file as an object"}]
